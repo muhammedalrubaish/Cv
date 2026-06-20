@@ -63,6 +63,31 @@ export interface CustomerSession {
   createdAt: Date
 }
 
+// 'auto'  => follow the global availability toggle
+// 'bot'   => bot always handles this conversation
+// 'human' => the owner handles this conversation manually
+export type ConversationMode = 'auto' | 'bot' | 'human'
+
+export interface Conversation {
+  phone: string
+  name: string
+  step: ConversationStep
+  cvData: Partial<CVData>
+  mode: ConversationMode
+  unread: number
+  createdAt: number
+  lastMessageAt: number
+}
+
+export interface StoredMessage {
+  dir: 'in' | 'out'
+  actor: 'customer' | 'bot' | 'human'
+  text: string
+  ts: number
+}
+
+export type Availability = 'available' | 'busy'
+
 export type ConversationStep =
   | 'greeting'
   | 'name'

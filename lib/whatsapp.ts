@@ -1,10 +1,25 @@
 import axios from 'axios'
+import { appendMessage } from './store'
 
 const WHATSAPP_API_URL = 'https://graph.facebook.com/v19.0'
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID
 const ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN
 
-export async function sendWhatsAppMessage(to: string, message: string) {
+// Best-effort logging of an outgoing message into the inbox history.
+// Never let a logging failure break the actual send.
+async function logOutgoing(to: string, text: string, actor: 'bot' | 'human') {
+  try {
+    await appendMessage(to, { dir: 'out', actor, text })
+  } catch (error) {
+    console.error('Failed to log outgoing message:', error)
+  }
+}
+
+export async function sendWhatsAppMessage(
+  to: string,
+  message: string,
+  actor: 'bot' | 'human' = 'bot'
+) {
   try {
     const response = await axios.post(
       `${WHATSAPP_API_URL}/${PHONE_NUMBER_ID}/messages`,
@@ -22,6 +37,7 @@ export async function sendWhatsAppMessage(to: string, message: string) {
         },
       }
     )
+    await logOutgoing(to, message, actor)
     return response.data
   } catch (error) {
     console.error('WhatsApp send error:', error)
@@ -60,6 +76,8 @@ export async function sendWhatsAppButtons(
         },
       }
     )
+    const optionsText = buttons.map((b) => `• ${b.title}`).join('\n')
+    await logOutgoing(to, `${bodyText}\n${optionsText}`, 'bot')
     return response.data
   } catch (error) {
     console.error('WhatsApp buttons error:', error)
@@ -97,6 +115,7 @@ export async function sendWhatsAppList(
         },
       }
     )
+    await logOutgoing(to, bodyText, 'bot')
     return response.data
   } catch (error) {
     console.error('WhatsApp list error:', error)
