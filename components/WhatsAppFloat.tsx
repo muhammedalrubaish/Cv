@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 export default function WhatsAppFloat() {
   const [tooltip, setTooltip] = useState(true)
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'
 
   return (
     <div className="whatsapp-float">

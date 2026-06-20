@@ -86,7 +86,7 @@ export default function HowItWorks() {
                 هكذا تبدو محادثتك مع الوكيل الذكي. سريع، سهل، ولا يحتاج خبرة تقنية.
               </p>
               <a
-                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'}?text=مرحباً`}
+                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'}?text=مرحباً`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20BA5A] text-white px-6 py-3 rounded-xl font-bold transition-all"

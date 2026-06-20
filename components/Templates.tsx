@@ -114,7 +114,7 @@ function CVMockup({ template }: { template: typeof templates[0] }) {
 
 export default function Templates() {
   const [active, setActive] = useState(0)
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'
 
   return (
     <section id="templates" className="py-20 bg-gray-50">

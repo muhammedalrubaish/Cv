@@ -1,5 +1,5 @@
 export default function Pricing() {
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'
 
   const included = [
     '✅ سيرة ذاتية متوافقة مع ATS بنسبة 100%',

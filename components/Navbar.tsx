@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'
 
   return (
     <nav className="fixed top-0 right-0 left-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-100">
@@ -65,7 +65,7 @@ export default function Navbar() {
             <a href="#pricing" className="block text-gray-600 hover:text-primary-600 font-medium py-2" onClick={() => setMenuOpen(false)}>الأسعار</a>
             <a href="#how-it-works" className="block text-gray-600 hover:text-primary-600 font-medium py-2" onClick={() => setMenuOpen(false)}>كيف يعمل؟</a>
             <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'}?text=مرحباً، أريد تصميم سيرة ذاتية`}
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'}?text=مرحباً، أريد تصميم سيرة ذاتية`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 bg-[#25D366] text-white px-4 py-3 rounded-xl font-semibold text-sm"
