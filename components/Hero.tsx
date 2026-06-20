@@ -1,7 +1,7 @@
 'use client'
 
 export default function Hero() {
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966500000000'
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'
 
   return (
     <section className="relative min-h-screen flex items-center gradient-bg overflow-hidden">
