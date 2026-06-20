@@ -1,31 +1,50 @@
 'use client'
 import { useState } from 'react'
 
+function IDesLogo({ size = 40 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Gold left accent bar */}
+      <rect x="5" y="16" width="4" height="22" rx="2" fill="#ffde59"/>
+      {/* I letter body */}
+      <rect x="7" y="16" width="9" height="22" rx="3.5" fill="white"/>
+      {/* Flame - dark/black part */}
+      <path d="M12 15C10.5 10.5 11.5 6.5 13.5 4C12.5 7.5 14.5 9 14.5 11.5C14.5 13.5 13.2 14.8 12 15Z" fill="#2a2928"/>
+      {/* Flame - cyan/blue part */}
+      <path d="M13.5 14C12.5 10.5 13.5 7 15.5 5C14.5 8 16 9.5 16 12C16 13.5 14.8 14.3 13.5 14Z" fill="#7acee1"/>
+      {/* "Des" suggestion - small cyan underline accent */}
+      <rect x="19" y="33" width="16" height="3" rx="1.5" fill="#7acee1" opacity="0.6"/>
+    </svg>
+  )
+}
+
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'
 
   return (
-    <nav className="fixed top-0 right-0 left-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-100">
+    <nav className="fixed top-0 right-0 left-0 z-50 bg-[#2a2928]/95 backdrop-blur-sm border-b border-[#4a4948]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 gradient-bg rounded-xl flex items-center justify-center shadow-md">
-              <span className="text-white font-bold text-lg">CV</span>
-            </div>
-            <div>
-              <span className="text-gray-900 font-bold text-lg">مصمم السيرة</span>
-              <span className="text-primary-600 font-bold text-lg"> الذاتية</span>
+          <div className="flex items-center gap-2.5">
+            <IDesLogo size={38} />
+            <div className="leading-tight">
+              <div className="text-white font-black text-lg tracking-tight">
+                i<span className="text-[#7acee1]">Des</span>
+              </div>
+              <div className="text-[#ffde59] text-[9px] font-semibold uppercase tracking-widest -mt-0.5">
+                Designers
+              </div>
             </div>
           </div>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-gray-600 hover:text-primary-600 transition-colors font-medium text-sm">المميزات</a>
-            <a href="#templates" className="text-gray-600 hover:text-primary-600 transition-colors font-medium text-sm">النماذج</a>
-            <a href="#pricing" className="text-gray-600 hover:text-primary-600 transition-colors font-medium text-sm">الأسعار</a>
-            <a href="#how-it-works" className="text-gray-600 hover:text-primary-600 transition-colors font-medium text-sm">كيف يعمل؟</a>
+            <a href="#features" className="text-gray-400 hover:text-[#7acee1] transition-colors font-medium text-sm">المميزات</a>
+            <a href="#templates" className="text-gray-400 hover:text-[#7acee1] transition-colors font-medium text-sm">النماذج</a>
+            <a href="#pricing" className="text-gray-400 hover:text-[#7acee1] transition-colors font-medium text-sm">الأسعار</a>
+            <a href="#how-it-works" className="text-gray-400 hover:text-[#7acee1] transition-colors font-medium text-sm">كيف يعمل؟</a>
           </div>
 
           {/* CTA */}
@@ -43,9 +62,9 @@ export default function Navbar() {
             </a>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu */}
           <button
-            className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100"
+            className="md:hidden p-2 rounded-lg text-gray-400 hover:bg-[#4a4948]"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,13 +78,13 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {menuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-100 space-y-3">
-            <a href="#features" className="block text-gray-600 hover:text-primary-600 font-medium py-2" onClick={() => setMenuOpen(false)}>المميزات</a>
-            <a href="#templates" className="block text-gray-600 hover:text-primary-600 font-medium py-2" onClick={() => setMenuOpen(false)}>النماذج</a>
-            <a href="#pricing" className="block text-gray-600 hover:text-primary-600 font-medium py-2" onClick={() => setMenuOpen(false)}>الأسعار</a>
-            <a href="#how-it-works" className="block text-gray-600 hover:text-primary-600 font-medium py-2" onClick={() => setMenuOpen(false)}>كيف يعمل؟</a>
+          <div className="md:hidden py-4 border-t border-[#4a4948] space-y-3">
+            <a href="#features" className="block text-gray-400 hover:text-[#7acee1] font-medium py-2" onClick={() => setMenuOpen(false)}>المميزات</a>
+            <a href="#templates" className="block text-gray-400 hover:text-[#7acee1] font-medium py-2" onClick={() => setMenuOpen(false)}>النماذج</a>
+            <a href="#pricing" className="block text-gray-400 hover:text-[#7acee1] font-medium py-2" onClick={() => setMenuOpen(false)}>الأسعار</a>
+            <a href="#how-it-works" className="block text-gray-400 hover:text-[#7acee1] font-medium py-2" onClick={() => setMenuOpen(false)}>كيف يعمل؟</a>
             <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'}?text=مرحباً، أريد تصميم سيرة ذاتية`}
+              href={`https://wa.me/${whatsappNumber}?text=مرحباً، أريد تصميم سيرة ذاتية`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 bg-[#25D366] text-white px-4 py-3 rounded-xl font-semibold text-sm"

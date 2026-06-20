@@ -1,21 +1,37 @@
+function IDesLogoSmall() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="5" y="16" width="4" height="22" rx="2" fill="#ffde59"/>
+      <rect x="7" y="16" width="9" height="22" rx="3.5" fill="white"/>
+      <path d="M12 15C10.5 10.5 11.5 6.5 13.5 4C12.5 7.5 14.5 9 14.5 11.5C14.5 13.5 13.2 14.8 12 15Z" fill="#2a2928"/>
+      <path d="M13.5 14C12.5 10.5 13.5 7 15.5 5C14.5 8 16 9.5 16 12C16 13.5 14.8 14.3 13.5 14Z" fill="#7acee1"/>
+      <rect x="19" y="33" width="16" height="3" rx="1.5" fill="#7acee1" opacity="0.6"/>
+    </svg>
+  )
+}
+
 export default function Footer() {
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'
   const year = new Date().getFullYear()
 
   return (
-    <footer className="gradient-bg text-white">
+    <footer className="bg-[#2a2928] border-t border-[#4a4948] text-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-3 gap-8 mb-10">
           {/* Brand */}
           <div className="text-right">
-            <div className="flex items-center gap-2 mb-4 justify-end">
-              <div>
-                <span className="text-white font-bold text-xl">مصمم السيرة</span>
-                <span className="text-gold-400 font-bold text-xl"> الذاتية</span>
+            <div className="flex items-center gap-2.5 mb-4 justify-end">
+              <div className="leading-tight">
+                <div className="text-white font-black text-lg tracking-tight">
+                  i<span className="text-[#7acee1]">Des</span>
+                </div>
+                <div className="text-[#ffde59] text-[9px] font-semibold uppercase tracking-widest -mt-0.5">
+                  Designers
+                </div>
               </div>
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center font-bold text-lg">CV</div>
+              <IDesLogoSmall />
             </div>
-            <p className="text-blue-200 text-sm leading-relaxed">
+            <p className="text-gray-500 text-sm leading-relaxed">
               خدمة متخصصة في تصميم السير الذاتية الاحترافية المتوافقة مع أنظمة ATS. نساعدك في الوصول لوظيفة أحلامك.
             </p>
           </div>
@@ -30,9 +46,10 @@ export default function Footer() {
                 { label: 'النماذج', href: '#templates' },
                 { label: 'كيف يعمل؟', href: '#how-it-works' },
                 { label: 'الأسعار', href: '#pricing' },
+                { label: 'تعبئة النموذج', href: '/builder' },
               ].map(link => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-blue-200 hover:text-white transition-colors text-sm">
+                  <a href={link.href} className="text-gray-500 hover:text-[#7acee1] transition-colors text-sm">
                     {link.label}
                   </a>
                 </li>
@@ -43,12 +60,12 @@ export default function Footer() {
           {/* Contact */}
           <div className="text-right">
             <h4 className="font-bold text-white mb-4">تواصل معنا</h4>
-            <div className="space-y-3">
+            <div className="space-y-3 mb-6">
               <a
                 href={`https://wa.me/${whatsappNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors text-sm justify-end"
+                className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-sm justify-end"
               >
                 <span>واتساب — خدمة فورية</span>
                 <svg className="w-5 h-5 text-[#25D366]" fill="currentColor" viewBox="0 0 24 24">
@@ -57,24 +74,32 @@ export default function Footer() {
               </a>
             </div>
 
-            <div className="mt-6 bg-white/10 rounded-2xl p-4 text-right">
-              <div className="text-gold-400 font-black text-2xl">50 ريال</div>
-              <div className="text-blue-200 text-xs mt-1">سيرة ذاتية احترافية + ATS</div>
-              <a
-                href={`https://wa.me/${whatsappNumber}?text=مرحباً، أريد تصميم سيرة ذاتية`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 block text-center bg-[#25D366] hover:bg-[#20BA5A] text-white py-2 rounded-xl text-sm font-bold transition-colors"
-              >
-                اطلب الآن
-              </a>
+            <div className="bg-[#393837] border border-[#4a4948] rounded-2xl p-4 text-right">
+              <div className="text-[#ffde59] font-black text-2xl">50 ريال</div>
+              <div className="text-gray-500 text-xs mt-1">سيرة ذاتية احترافية + ATS</div>
+              <div className="flex flex-col gap-2 mt-3">
+                <a
+                  href="/builder"
+                  className="block text-center bg-[#7acee1] hover:bg-[#5bbdd4] text-[#2a2928] py-2 rounded-xl text-xs font-bold transition-colors"
+                >
+                  تعبئة من الموقع
+                </a>
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=مرحباً، أريد تصميم سيرة ذاتية`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-center bg-[#25D366] hover:bg-[#20BA5A] text-white py-2 rounded-xl text-xs font-bold transition-colors"
+                >
+                  طلب عبر واتساب
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-white/10 pt-6 text-center">
-          <p className="text-blue-200 text-sm">
-            © {year} مصمم السيرة الذاتية — جميع الحقوق محفوظة
+        <div className="border-t border-[#4a4948] pt-6 text-center">
+          <p className="text-gray-600 text-sm">
+            © {year} iDes Designers — جميع الحقوق محفوظة
           </p>
         </div>
       </div>

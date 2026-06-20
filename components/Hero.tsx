@@ -4,12 +4,14 @@ export default function Hero() {
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'
 
   return (
-    <section className="relative min-h-screen flex items-center gradient-bg overflow-hidden">
+    <section className="relative min-h-screen flex items-center bg-[#2a2928] overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary-500/5 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#7acee1]/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-[#ffde59]/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#7acee1]/3 rounded-full blur-3xl" />
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-5" style={{backgroundImage: 'radial-gradient(#7acee1 1px, transparent 1px)', backgroundSize: '40px 40px'}} />
       </div>
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 pt-32">
@@ -17,17 +19,17 @@ export default function Hero() {
           {/* Content */}
           <div className="text-right">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-              <span className="text-white/90 text-sm font-medium">متوافق 100% مع نظام ATS</span>
+            <div className="inline-flex items-center gap-2 bg-[#7acee1]/10 border border-[#7acee1]/30 rounded-full px-4 py-2 mb-6">
+              <span className="w-2 h-2 bg-[#7acee1] rounded-full animate-pulse" />
+              <span className="text-[#7acee1] text-sm font-medium">متوافق 100% مع نظام ATS</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
               سيرة ذاتية
-              <span className="block text-gold-400 mt-1">تفتح لك الأبواب</span>
+              <span className="block text-[#7acee1] mt-1">تفتح لك الأبواب</span>
             </h1>
 
-            <p className="text-lg text-white/80 leading-relaxed mb-8 max-w-lg">
+            <p className="text-lg text-gray-400 leading-relaxed mb-8 max-w-lg">
               نصمم لك سيرة ذاتية احترافية تتخطى فلاتر الذكاء الاصطناعي وتصل مباشرة لمسؤول التوظيف.
               الطلب عبر واتساب في دقائق.
             </p>
@@ -35,18 +37,18 @@ export default function Hero() {
             {/* Stats */}
             <div className="flex items-center gap-6 mb-10">
               <div className="text-center">
-                <div className="text-3xl font-black text-gold-400">+500</div>
-                <div className="text-white/70 text-xs mt-1">عميل سعيد</div>
+                <div className="text-3xl font-black text-[#ffde59]">+500</div>
+                <div className="text-gray-500 text-xs mt-1">عميل سعيد</div>
               </div>
-              <div className="w-px h-12 bg-white/20" />
+              <div className="w-px h-12 bg-[#4a4948]" />
               <div className="text-center">
-                <div className="text-3xl font-black text-gold-400">24h</div>
-                <div className="text-white/70 text-xs mt-1">وقت التسليم</div>
+                <div className="text-3xl font-black text-[#ffde59]">24h</div>
+                <div className="text-gray-500 text-xs mt-1">وقت التسليم</div>
               </div>
-              <div className="w-px h-12 bg-white/20" />
+              <div className="w-px h-12 bg-[#4a4948]" />
               <div className="text-center">
-                <div className="text-3xl font-black text-gold-400">100%</div>
-                <div className="text-white/70 text-xs mt-1">متوافق ATS</div>
+                <div className="text-3xl font-black text-[#ffde59]">100%</div>
+                <div className="text-gray-500 text-xs mt-1">متوافق ATS</div>
               </div>
             </div>
 
@@ -65,7 +67,7 @@ export default function Hero() {
               </a>
               <a
                 href="#templates"
-                className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all"
+                className="flex items-center justify-center gap-2 bg-[#393837] hover:bg-[#4a4948] border border-[#4a4948] hover:border-[#7acee1] text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all"
               >
                 شاهد النماذج
                 <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,69 +76,63 @@ export default function Hero() {
               </a>
             </div>
 
-            {/* Price badge */}
-            <div className="mt-6 inline-flex items-center gap-2 text-white/70 text-sm">
-              <svg className="w-4 h-4 text-gold-400" fill="currentColor" viewBox="0 0 20 20">
+            <div className="mt-6 inline-flex items-center gap-2 text-gray-500 text-sm">
+              <svg className="w-4 h-4 text-[#ffde59]" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              السعر <strong className="text-gold-400">50 ريال فقط</strong> — الدفع بعد التحويل البنكي
+              السعر <strong className="text-[#ffde59]">50 ريال فقط</strong> — الدفع بعد التحويل البنكي
             </div>
           </div>
 
           {/* CV Preview Card */}
           <div className="hidden lg:block">
             <div className="relative">
-              {/* Main card */}
-              <div className="bg-white rounded-3xl shadow-2xl p-6 transform rotate-1 hover:rotate-0 transition-transform duration-500">
+              <div className="bg-[#393837] border border-[#4a4948] rounded-3xl shadow-2xl p-6 transform rotate-1 hover:rotate-0 transition-transform duration-500">
                 {/* CV Header */}
-                <div className="bg-primary-700 rounded-2xl p-5 mb-4 text-left">
+                <div className="bg-[#2a2928] border border-[#7acee1]/30 rounded-2xl p-5 mb-4 text-left">
                   <h3 className="text-white font-bold text-xl">محمد عبدالله الأحمدي</h3>
-                  <p className="text-blue-200 text-sm mt-1">مهندس برمجيات أول</p>
+                  <p className="text-[#7acee1] text-sm mt-1">مهندس برمجيات أول</p>
                   <div className="flex items-center gap-3 mt-3">
-                    <span className="text-blue-200 text-xs">📧 mohammed@email.com</span>
-                    <span className="text-blue-200 text-xs">📍 الرياض</span>
+                    <span className="text-gray-400 text-xs">📧 mohammed@email.com</span>
+                    <span className="text-gray-400 text-xs">📍 الرياض</span>
                   </div>
                 </div>
 
-                {/* CV Body skeleton */}
                 <div className="space-y-3">
                   <div>
-                    <div className="text-xs font-bold text-primary-700 uppercase tracking-wide border-b border-primary-100 pb-1 mb-2 text-right">الملخص المهني</div>
+                    <div className="text-xs font-bold text-[#7acee1] uppercase tracking-wide border-b border-[#4a4948] pb-1 mb-2 text-right">الملخص المهني</div>
                     <div className="space-y-1">
-                      <div className="h-2 bg-gray-200 rounded w-full" />
-                      <div className="h-2 bg-gray-200 rounded w-5/6" />
-                      <div className="h-2 bg-gray-200 rounded w-4/5" />
+                      <div className="h-2 bg-[#4a4948] rounded w-full" />
+                      <div className="h-2 bg-[#4a4948] rounded w-5/6" />
+                      <div className="h-2 bg-[#4a4948] rounded w-4/5" />
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-primary-700 uppercase tracking-wide border-b border-primary-100 pb-1 mb-2 text-right">الخبرة العملية</div>
+                    <div className="text-xs font-bold text-[#7acee1] uppercase tracking-wide border-b border-[#4a4948] pb-1 mb-2 text-right">الخبرة العملية</div>
                     <div className="flex justify-between items-start mb-1">
-                      <div className="h-2 bg-gray-300 rounded w-24" />
-                      <div className="text-xs font-semibold text-gray-700">شركة أرامكو السعودية</div>
+                      <div className="h-2 bg-[#4a4948] rounded w-24" />
+                      <div className="text-xs font-semibold text-gray-300">شركة أرامكو السعودية</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="h-2 bg-gray-200 rounded w-full" />
-                      <div className="h-2 bg-gray-200 rounded w-3/4" />
+                      <div className="h-2 bg-[#4a4948] rounded w-full" />
+                      <div className="h-2 bg-[#4a4948] rounded w-3/4" />
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-primary-700 uppercase tracking-wide border-b border-primary-100 pb-1 mb-2 text-right">المهارات</div>
+                    <div className="text-xs font-bold text-[#7acee1] uppercase tracking-wide border-b border-[#4a4948] pb-1 mb-2 text-right">المهارات</div>
                     <div className="flex flex-wrap gap-2 justify-end">
                       {['Python', 'React', 'SQL', 'AWS', 'Agile'].map(skill => (
-                        <span key={skill} className="bg-primary-50 text-primary-700 text-xs px-2 py-1 rounded-full font-medium">{skill}</span>
+                        <span key={skill} className="bg-[#7acee1]/10 text-[#7acee1] text-xs px-2 py-1 rounded-full font-medium border border-[#7acee1]/20">{skill}</span>
                       ))}
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* ATS Badge */}
-              <div className="absolute -top-4 -left-4 bg-green-500 text-white rounded-2xl px-4 py-2 shadow-lg font-bold text-sm transform -rotate-6">
+              <div className="absolute -top-4 -left-4 bg-[#25D366] text-white rounded-2xl px-4 py-2 shadow-lg font-bold text-sm transform -rotate-6">
                 ✓ ATS Ready
               </div>
-
-              {/* Price badge */}
-              <div className="absolute -bottom-4 -right-4 bg-gold-500 text-white rounded-2xl px-5 py-3 shadow-lg font-black text-lg transform rotate-3">
+              <div className="absolute -bottom-4 -right-4 bg-[#ffde59] text-[#2a2928] rounded-2xl px-5 py-3 shadow-lg font-black text-lg transform rotate-3">
                 50 ر.س فقط
               </div>
             </div>
@@ -146,8 +142,8 @@ export default function Hero() {
 
       {/* Wave bottom */}
       <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 80L60 72C120 64 240 48 360 40C480 32 600 32 720 40C840 48 960 64 1080 68C1200 72 1320 64 1380 60L1440 56V80H1380C1320 80 1200 80 1080 80C960 80 840 80 720 80C600 80 480 80 360 80C240 80 120 80 60 80H0Z" fill="#f8fafc"/>
+        <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 60L60 54C120 48 240 36 360 30C480 24 600 24 720 30C840 36 960 48 1080 51C1200 54 1320 48 1380 45L1440 42V60H0Z" fill="#393837"/>
         </svg>
       </div>
     </section>
