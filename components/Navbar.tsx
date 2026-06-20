@@ -6,27 +6,40 @@ function IDesLogo({ size = 40 }: { size?: number }) {
     <svg
       width={size}
       height={size}
-      viewBox="0 0 40 40"
+      viewBox="0 0 48 48"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ animation: 'logo-glow-pulse 2.5s ease-in-out infinite' }}
+      style={{ animation: 'logo-glow-pulse 2.6s ease-in-out infinite' }}
     >
-      <rect
-        x="5" y="16" width="4" height="22" rx="2" fill="#ffde59"
-        style={{ animation: 'gold-shimmer 2.5s ease-in-out infinite' }}
+      <defs>
+        <linearGradient id="idesFlame" x1="24" y1="6" x2="24" y2="30" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#7acee1" />
+          <stop offset="0.55" stopColor="#5bbdd4" />
+          <stop offset="1" stopColor="#ffde59" />
+        </linearGradient>
+      </defs>
+
+      {/* "i" stem — the body */}
+      <rect x="20" y="22" width="8" height="20" rx="4" fill="#ffffff" />
+      {/* gold accent line beside the stem */}
+      <rect x="16" y="24" width="2.5" height="16" rx="1.25" fill="#ffde59"
+        style={{ animation: 'gold-shimmer 2.6s ease-in-out infinite' }}
       />
-      <rect x="7" y="16" width="9" height="22" rx="3.5" fill="white"/>
-      <path
-        d="M12 15C10.5 10.5 11.5 6.5 13.5 4C12.5 7.5 14.5 9 14.5 11.5C14.5 13.5 13.2 14.8 12 15Z"
-        fill="#2a2928"
-        style={{ animation: 'flame-dance 1.9s ease-in-out infinite', transformOrigin: '13px 14px' }}
-      />
-      <path
-        d="M13.5 14C12.5 10.5 13.5 7 15.5 5C14.5 8 16 9.5 16 12C16 13.5 14.8 14.3 13.5 14Z"
-        fill="#7acee1"
-        style={{ animation: 'flame-dance 1.9s ease-in-out infinite 0.35s', transformOrigin: '14.5px 13px' }}
-      />
-      <rect x="19" y="33" width="16" height="3" rx="1.5" fill="#7acee1" opacity="0.6"/>
+
+      {/* Flame group (the dot of the "i") */}
+      <g style={{ animation: 'flame-dance 2s ease-in-out infinite', transformOrigin: '24px 18px' }}>
+        {/* outer flame */}
+        <path
+          d="M24 4C29 9.5 32 13 31.4 18.2C30.9 22.7 28 25.5 24 25.5C20 25.5 17.1 22.7 16.6 18.2C16 13 19 9.5 24 4Z"
+          fill="url(#idesFlame)"
+        />
+        {/* inner flame highlight */}
+        <path
+          d="M24 11C26.3 13.5 27.6 15.6 27.2 18.2C26.8 20.8 25.6 22.4 24 22.4C22.4 22.4 21.2 20.8 20.8 18.2C20.4 15.6 21.7 13.5 24 11Z"
+          fill="#ffffff"
+          opacity="0.55"
+        />
+      </g>
     </svg>
   )
 }
