@@ -1,52 +1,56 @@
-import { CustomerSession, ConversationStep, CVData } from '@/types/cv'
-import { sendWhatsAppMessage, sendWhatsAppButtons, sendWhatsAppList } from './whatsapp'
-
-// In-memory store (use Redis/DB in production)
-const sessions = new Map<string, CustomerSession>()
+import { Conversation } from '@/types/cv'
+import { sendWhatsAppMessage, sendWhatsAppButtons } from './whatsapp'
+import { ensureConversation, updateConversation } from './store'
 
 const BANK_NAME = process.env.NEXT_PUBLIC_BANK_NAME || 'البنك الأهلي السعودي'
 const IBAN = process.env.NEXT_PUBLIC_IBAN || 'SA00 0000 0000 0000 0000 0000'
 const ACCOUNT_NAME = process.env.NEXT_PUBLIC_ACCOUNT_NAME || 'خدمات السيرة الذاتية'
 
-export function getSession(phone: string): CustomerSession {
-  if (!sessions.has(phone)) {
-    sessions.set(phone, {
-      phone,
-      step: 'greeting',
-      cvData: {
-        personalInfo: {
-          fullName: '',
-          jobTitle: '',
-          phone,
-          email: '',
-          city: '',
-          summary: '',
-        },
-        experience: [],
-        education: [],
-        skills: [],
-        languages: [],
-        template: 'classic',
+// Session helpers — now backed by the persistent store instead of an in-memory Map.
+async function getSession(phone: string): Promise<Conversation> {
+  return ensureConversation(phone)
+}
+
+async function updateSession(phone: string, updates: Partial<Conversation>): Promise<Conversation> {
+  return updateConversation(phone, updates)
+}
+
+// Reset the CV flow back to the start while keeping inbox metadata (mode, name).
+async function resetSession(phone: string): Promise<void> {
+  const fresh = await ensureConversation(phone)
+  await updateConversation(phone, {
+    step: 'greeting',
+    cvData: {
+      personalInfo: {
+        fullName: '',
+        jobTitle: '',
+        phone,
+        email: '',
+        city: '',
+        summary: '',
       },
-      createdAt: new Date(),
-    })
-  }
-  return sessions.get(phone)!
+      experience: [],
+      education: [],
+      skills: [],
+      languages: [],
+      template: 'classic',
+    },
+    name: fresh.name,
+  })
 }
 
-export function updateSession(phone: string, updates: Partial<CustomerSession>) {
-  const session = getSession(phone)
-  sessions.set(phone, { ...session, ...updates })
-}
-
+/**
+ * Runs the bot flow for an incoming message. The webhook only calls this when
+ * it has decided the bot should respond (see routing in app/api/whatsapp).
+ */
 export async function processMessage(phone: string, message: string): Promise<void> {
-  const session = getSession(phone)
+  const session = await getSession(phone)
   const text = message.trim()
   const lowerText = text.toLowerCase().replace(/\s+/g, '')
 
   // Handle restart command
   if (lowerText === 'بداية' || lowerText === 'restart' || lowerText === 'ابدأ') {
-    sessions.delete(phone)
+    await resetSession(phone)
     await handleGreeting(phone)
     return
   }
@@ -106,7 +110,7 @@ export async function processMessage(phone: string, message: string): Promise<vo
 }
 
 async function handleGreeting(phone: string) {
-  updateSession(phone, { step: 'name' })
+  await updateSession(phone, { step: 'name' })
   await sendWhatsAppMessage(
     phone,
     `🌟 *أهلاً بك في خدمة تصميم السيرة الذاتية!*
@@ -132,9 +136,10 @@ async function handleName(phone: string, text: string) {
     return
   }
 
-  const session = getSession(phone)
-  updateSession(phone, {
+  const session = await getSession(phone)
+  await updateSession(phone, {
     step: 'job_title',
+    name: text,
     cvData: {
       ...session.cvData,
       personalInfo: { ...session.cvData.personalInfo!, fullName: text },
@@ -157,8 +162,8 @@ async function handleJobTitle(phone: string, text: string) {
     return
   }
 
-  const session = getSession(phone)
-  updateSession(phone, {
+  const session = await getSession(phone)
+  await updateSession(phone, {
     step: 'email',
     cvData: {
       ...session.cvData,
@@ -183,8 +188,8 @@ async function handleEmail(phone: string, text: string) {
     return
   }
 
-  const session = getSession(phone)
-  updateSession(phone, {
+  const session = await getSession(phone)
+  await updateSession(phone, {
     step: 'city',
     cvData: {
       ...session.cvData,
@@ -201,8 +206,8 @@ async function handleCity(phone: string, text: string) {
     return
   }
 
-  const session = getSession(phone)
-  updateSession(phone, {
+  const session = await getSession(phone)
+  await updateSession(phone, {
     step: 'summary',
     cvData: {
       ...session.cvData,
@@ -228,8 +233,8 @@ async function handleSummary(phone: string, text: string) {
     return
   }
 
-  const session = getSession(phone)
-  updateSession(phone, {
+  const session = await getSession(phone)
+  await updateSession(phone, {
     step: 'experience_count',
     cvData: {
       ...session.cvData,
@@ -249,7 +254,7 @@ async function handleSummary(phone: string, text: string) {
 }
 
 async function handleExperienceCount(phone: string, text: string) {
-  const session = getSession(phone)
+  const session = await getSession(phone)
   let count = 0
 
   if (text.includes('0') || text.includes('بدون') || text.includes('خريج') || text === 'exp_0') {
@@ -271,16 +276,27 @@ async function handleExperienceCount(phone: string, text: string) {
   }
 
   if (count === 0) {
-    updateSession(phone, { step: 'education' })
+    await updateSession(phone, { step: 'education' })
     await handleEducationPrompt(phone)
     return
   }
 
-  updateSession(phone, {
+  await updateSession(phone, {
     step: 'experience_details',
     cvData: {
       ...session.cvData,
-      experience: [],
+      // Pre-allocate the experience slots we still need to fill.
+      experience: Array(count)
+        .fill(null)
+        .map((_, i) => ({
+          id: `exp_${i}`,
+          company: '',
+          position: '',
+          startDate: '',
+          endDate: '',
+          current: false,
+          description: '',
+        })),
     },
   })
 
@@ -288,32 +304,15 @@ async function handleExperienceCount(phone: string, text: string) {
     phone,
     `✍️ *الوظيفة 1 من ${count}*\n\nأرسل تفاصيل الوظيفة بهذا الشكل:\n\n*الشركة | المسمى | من (سنة) | إلى (سنة) | المهام*\n\n_(مثال: شركة أرامكو | مهندس ميداني | 2020 | 2023 | إدارة المشاريع وتنسيق الفرق والإشراف على العمليات اليومية)_\n\n💡 اكتب "الحالية" إذا كانت وظيفتك الحالية`
   )
-
-  // Store target count
-  updateSession(phone, {
-    cvData: {
-      ...getSession(phone).cvData,
-    },
-  })
-  // Store exp count target in a temp field via session update
-  sessions.get(phone)!.cvData.experience = Array(count).fill(null).map((_, i) => ({
-    id: `exp_${i}`,
-    company: '',
-    position: '',
-    startDate: '',
-    endDate: '',
-    current: false,
-    description: '',
-  }))
 }
 
 async function handleExperienceDetails(phone: string, text: string) {
-  const session = getSession(phone)
+  const session = await getSession(phone)
   const experiences = session.cvData.experience || []
-  const filledCount = experiences.filter(e => e.company !== '').length
+  const filledCount = experiences.filter((e) => e.company !== '').length
   const totalCount = experiences.length
 
-  const parts = text.split('|').map(p => p.trim())
+  const parts = text.split('|').map((p) => p.trim())
   if (parts.length < 4) {
     await sendWhatsAppMessage(
       phone,
@@ -336,7 +335,7 @@ async function handleExperienceDetails(phone: string, text: string) {
     description: description || `العمل في ${company} كـ${position}`,
   }
 
-  updateSession(phone, { cvData: { ...session.cvData, experience: experiences } })
+  await updateSession(phone, { cvData: { ...session.cvData, experience: experiences } })
 
   if (filledCount + 1 < totalCount) {
     await sendWhatsAppMessage(
@@ -344,7 +343,7 @@ async function handleExperienceDetails(phone: string, text: string) {
       `✅ تم حفظ وظيفة "${company}"\n\n✍️ *الوظيفة ${filledCount + 2} من ${totalCount}*\n\nأرسل تفاصيلها بنفس الشكل:\n*الشركة | المسمى | من (سنة) | إلى (سنة) | المهام*`
     )
   } else {
-    updateSession(phone, { step: 'education' })
+    await updateSession(phone, { step: 'education' })
     await handleEducationPrompt(phone)
   }
 }
@@ -357,19 +356,19 @@ async function handleEducationPrompt(phone: string) {
 }
 
 async function handleEducation(phone: string, text: string) {
-  const session = getSession(phone)
+  const session = await getSession(phone)
 
   if (text.toLowerCase() === 'تم' || text === 'done') {
     if ((session.cvData.education || []).length === 0) {
       await sendWhatsAppMessage(phone, '⚠️ الرجاء إضافة شهادة واحدة على الأقل')
       return
     }
-    updateSession(phone, { step: 'skills' })
+    await updateSession(phone, { step: 'skills' })
     await handleSkillsPrompt(phone)
     return
   }
 
-  const parts = text.split('|').map(p => p.trim())
+  const parts = text.split('|').map((p) => p.trim())
   if (parts.length < 3) {
     await sendWhatsAppMessage(
       phone,
@@ -389,7 +388,7 @@ async function handleEducation(phone: string, text: string) {
     endDate: endDate || '',
   })
 
-  updateSession(phone, { cvData: { ...session.cvData, education } })
+  await updateSession(phone, { cvData: { ...session.cvData, education } })
   await sendWhatsAppMessage(
     phone,
     `✅ تم حفظ: "${degree} - ${field}"\n\nهل تريد إضافة شهادة أخرى؟ أرسلها، أو أرسل *"تم"* للمتابعة`
@@ -404,8 +403,8 @@ async function handleSkillsPrompt(phone: string) {
 }
 
 async function handleSkills(phone: string, text: string) {
-  const session = getSession(phone)
-  const skillNames = text.split(',').map(s => s.trim()).filter(s => s.length > 0)
+  const session = await getSession(phone)
+  const skillNames = text.split(',').map((s) => s.trim()).filter((s) => s.length > 0)
 
   if (skillNames.length < 3) {
     await sendWhatsAppMessage(phone, '⚠️ الرجاء إدخال 3 مهارات على الأقل مفصولة بفاصلة')
@@ -418,7 +417,7 @@ async function handleSkills(phone: string, text: string) {
     level: 'advanced' as const,
   }))
 
-  updateSession(phone, {
+  await updateSession(phone, {
     step: 'languages',
     cvData: { ...session.cvData, skills },
   })
@@ -430,11 +429,11 @@ async function handleSkills(phone: string, text: string) {
 }
 
 async function handleLanguages(phone: string, text: string) {
-  const session = getSession(phone)
-  const langParts = text.split(',').map(s => s.trim()).filter(s => s.length > 0)
+  const session = await getSession(phone)
+  const langParts = text.split(',').map((s) => s.trim()).filter((s) => s.length > 0)
 
   const languages = langParts.map((part, i) => {
-    const [name, level] = part.split('-').map(s => s.trim())
+    const [name, level] = part.split('-').map((s) => s.trim())
     let langLevel: 'basic' | 'intermediate' | 'fluent' | 'native' = 'fluent'
     if (level?.includes('الأم') || level?.includes('native')) langLevel = 'native'
     else if (level?.includes('متقدم') || level?.includes('advanced')) langLevel = 'fluent'
@@ -444,7 +443,7 @@ async function handleLanguages(phone: string, text: string) {
     return { id: `lang_${i}`, name: name || part, level: langLevel }
   })
 
-  updateSession(phone, {
+  await updateSession(phone, {
     step: 'template_choice',
     cvData: { ...session.cvData, languages },
   })
@@ -461,7 +460,7 @@ async function handleLanguages(phone: string, text: string) {
 }
 
 async function handleTemplateChoice(phone: string, text: string) {
-  const session = getSession(phone)
+  const session = await getSession(phone)
   let template: 'classic' | 'modern' | 'executive' = 'classic'
 
   if (text.includes('modern') || text.includes('عصري') || text.includes('tmpl_modern')) {
@@ -470,12 +469,12 @@ async function handleTemplateChoice(phone: string, text: string) {
     template = 'executive'
   }
 
-  updateSession(phone, {
+  const updated = await updateSession(phone, {
     step: 'confirm',
     cvData: { ...session.cvData, template },
   })
 
-  const cv = getSession(phone).cvData
+  const cv = updated.cvData
   const info = cv.personalInfo!
 
   const summary = `📋 *ملخص سيرتك الذاتية*
@@ -485,7 +484,7 @@ async function handleTemplateChoice(phone: string, text: string) {
 📍 *المدينة:* ${info.city}
 📧 *البريد:* ${info.email}
 🎓 *التعليم:* ${cv.education?.length || 0} شهادة
-💼 *الخبرة:* ${cv.experience?.filter(e => e.company).length || 0} وظيفة
+💼 *الخبرة:* ${cv.experience?.filter((e) => e.company).length || 0} وظيفة
 🛠️ *المهارات:* ${cv.skills?.length || 0} مهارة
 🎨 *النموذج:* ${template === 'classic' ? 'الكلاسيكي' : template === 'modern' ? 'العصري' : 'التنفيذي'}
 
@@ -501,13 +500,13 @@ async function handleTemplateChoice(phone: string, text: string) {
 
 async function handleConfirm(phone: string, text: string) {
   if (text.includes('edit') || text.includes('تعديل')) {
-    sessions.delete(phone)
+    await resetSession(phone)
     await sendWhatsAppMessage(phone, '✏️ سنبدأ من جديد. أرسل *"بداية"* للمتابعة')
     return
   }
 
   if (text.includes('yes') || text.includes('تأكيد') || text.includes('نعم')) {
-    updateSession(phone, { step: 'payment' })
+    await updateSession(phone, { step: 'payment' })
     await sendWhatsAppMessage(
       phone,
       `🎉 *تم تأكيد طلبك!*
@@ -528,7 +527,7 @@ async function handleConfirm(phone: string, text: string) {
 }
 
 async function handlePayment(phone: string, text: string) {
-  updateSession(phone, { step: 'completed' })
+  await updateSession(phone, { step: 'completed' })
   await sendWhatsAppMessage(
     phone,
     `✅ *تم استلام طلبك!*

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { processMessage } from '@/lib/conversation'
+import { appendMessage, ensureConversation, shouldBotReply, updateConversation } from '@/lib/store'
 
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN
 
@@ -36,29 +37,49 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 'ok' })
     }
 
+    // WhatsApp provides the customer's display name in the contacts array.
+    const contactName: string | undefined = value.contacts?.[0]?.profile?.name
+
     for (const message of value.messages) {
       const from = message.from // phone number
-      let messageText = ''
+      let messageText = '' // value passed to the bot (ids for buttons)
+      let displayText = '' // human-readable text shown in the inbox
 
       // Handle different message types
       if (message.type === 'text') {
         messageText = message.text.body
+        displayText = message.text.body
       } else if (message.type === 'interactive') {
-        // Button/list reply
         if (message.interactive.type === 'button_reply') {
           messageText = message.interactive.button_reply.id
+          displayText = message.interactive.button_reply.title || messageText
         } else if (message.interactive.type === 'list_reply') {
           messageText = message.interactive.list_reply.id
+          displayText = message.interactive.list_reply.title || messageText
         }
       } else if (message.type === 'image' || message.type === 'document') {
-        // Customer sent payment receipt
+        // Customer sent a payment receipt / attachment
         messageText = 'PAYMENT_PROOF_RECEIVED'
+        displayText = message.type === 'image' ? '📷 صورة (إيصال؟)' : '📎 مستند'
       } else {
         continue
       }
 
-      // Process the message asynchronously
-      await processMessage(from, messageText)
+      // Make sure the conversation exists and capture the customer's name once.
+      const conv = await ensureConversation(from)
+      if (contactName && !conv.name) {
+        await updateConversation(from, { name: contactName })
+      }
+
+      // Log the incoming message into the inbox history (marks it unread).
+      await appendMessage(from, { dir: 'in', actor: 'customer', text: displayText })
+
+      // Decide who answers: the bot (auto/busy) or the human owner (available/handover).
+      const fresh = await ensureConversation(from)
+      if (await shouldBotReply(fresh)) {
+        await processMessage(from, messageText)
+      }
+      // Otherwise the message simply waits in the admin inbox for a manual reply.
     }
 
     return NextResponse.json({ status: 'ok' })
