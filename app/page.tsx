@@ -7,10 +7,12 @@ import Pricing from '@/components/Pricing'
 import Testimonials from '@/components/Testimonials'
 import Footer from '@/components/Footer'
 import WhatsAppFloat from '@/components/WhatsAppFloat'
+import ScrollObserver from '@/components/ScrollObserver'
 
 export default function Home() {
   return (
     <main>
+      <ScrollObserver />
       <Navbar />
       <Hero />
       <Features />

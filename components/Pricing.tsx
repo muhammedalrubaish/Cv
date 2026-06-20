@@ -18,7 +18,7 @@ export default function Pricing() {
   }
 
   return (
-    <section id="pricing" className="py-20 section-dark">
+    <section id="pricing" className="py-20 section-dark section-animate">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">

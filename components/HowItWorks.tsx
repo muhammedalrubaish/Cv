@@ -37,7 +37,7 @@ export default function HowItWorks() {
   ]
 
   return (
-    <section id="how-it-works" className="py-20 section-darker">
+    <section id="how-it-works" className="py-20 section-darker section-animate">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-14">

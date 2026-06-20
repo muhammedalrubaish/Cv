@@ -3,16 +3,29 @@ import { useState } from 'react'
 
 function IDesLogo({ size = 40 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Gold left accent bar */}
-      <rect x="5" y="16" width="4" height="22" rx="2" fill="#ffde59"/>
-      {/* I letter body */}
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ animation: 'logo-glow-pulse 2.5s ease-in-out infinite' }}
+    >
+      <rect
+        x="5" y="16" width="4" height="22" rx="2" fill="#ffde59"
+        style={{ animation: 'gold-shimmer 2.5s ease-in-out infinite' }}
+      />
       <rect x="7" y="16" width="9" height="22" rx="3.5" fill="white"/>
-      {/* Flame - dark/black part */}
-      <path d="M12 15C10.5 10.5 11.5 6.5 13.5 4C12.5 7.5 14.5 9 14.5 11.5C14.5 13.5 13.2 14.8 12 15Z" fill="#2a2928"/>
-      {/* Flame - cyan/blue part */}
-      <path d="M13.5 14C12.5 10.5 13.5 7 15.5 5C14.5 8 16 9.5 16 12C16 13.5 14.8 14.3 13.5 14Z" fill="#7acee1"/>
-      {/* "Des" suggestion - small cyan underline accent */}
+      <path
+        d="M12 15C10.5 10.5 11.5 6.5 13.5 4C12.5 7.5 14.5 9 14.5 11.5C14.5 13.5 13.2 14.8 12 15Z"
+        fill="#2a2928"
+        style={{ animation: 'flame-dance 1.9s ease-in-out infinite', transformOrigin: '13px 14px' }}
+      />
+      <path
+        d="M13.5 14C12.5 10.5 13.5 7 15.5 5C14.5 8 16 9.5 16 12C16 13.5 14.8 14.3 13.5 14Z"
+        fill="#7acee1"
+        style={{ animation: 'flame-dance 1.9s ease-in-out infinite 0.35s', transformOrigin: '14.5px 13px' }}
+      />
       <rect x="19" y="33" width="16" height="3" rx="1.5" fill="#7acee1" opacity="0.6"/>
     </svg>
   )

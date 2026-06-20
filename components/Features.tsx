@@ -39,7 +39,7 @@ export default function Features() {
   ]
 
   return (
-    <section id="features" className="py-20 section-dark">
+    <section id="features" className="py-20 section-dark section-animate">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-14">
@@ -56,7 +56,7 @@ export default function Features() {
         {/* Features Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, i) => (
-            <div key={i} className="card-dark rounded-2xl p-6 card-hover">
+            <div key={i} className="animate-on-scroll card-dark rounded-2xl p-6 card-hover" style={{ transitionDelay: `${i * 0.08}s` }}>
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-md"
                 style={{ backgroundColor: `${feature.accent}15`, border: `1px solid ${feature.accent}30` }}

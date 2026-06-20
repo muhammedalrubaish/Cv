@@ -39,7 +39,7 @@ export default function Testimonials() {
   ]
 
   return (
-    <section className="py-20 section-darker">
+    <section className="py-20 section-darker section-animate">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -66,7 +66,7 @@ export default function Testimonials() {
         {/* Reviews Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {reviews.map((review, i) => (
-            <div key={i} className="card-dark rounded-2xl p-6 card-hover">
+            <div key={i} className="animate-on-scroll card-dark rounded-2xl p-6 card-hover" style={{ transitionDelay: `${i * 0.07}s` }}>
               {/* Stars */}
               <div className="flex mb-4">
                 {[1,2,3,4,5].map(j => (

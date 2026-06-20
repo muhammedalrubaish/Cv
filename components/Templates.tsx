@@ -94,7 +94,7 @@ export default function Templates() {
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'
 
   return (
-    <section id="templates" className="py-20 section-darker">
+    <section id="templates" className="py-20 section-darker section-animate">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
