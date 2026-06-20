@@ -1,38 +1,34 @@
 'use client'
+import { IconChat, IconWrite, IconTemplate, IconMoney, IconDocument, IconMonitor } from './Icons'
 
 export default function HowItWorks() {
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '966581008879'
 
   const steps = [
     {
-      icon: '💬',
+      Icon: IconChat,
       title: 'تواصل أو عبّئ الموقع',
       desc: 'ابدأ بواتساب مع الوكيل الذكي، أو افتح نموذج التعبئة مباشرة في الموقع.',
-      accent: '#25D366',
     },
     {
-      icon: '📝',
+      Icon: IconWrite,
       title: 'أدخل بياناتك',
       desc: 'أدخل معلوماتك الشخصية، خبراتك، تعليمك ومهاراتك خطوة بخطوة.',
-      accent: '#7acee1',
     },
     {
-      icon: '🎨',
+      Icon: IconTemplate,
       title: 'اختر النموذج',
       desc: 'اختر من بين 3 نماذج احترافية: الكلاسيكي، العصري، أو التنفيذي.',
-      accent: '#ffde59',
     },
     {
-      icon: '💰',
+      Icon: IconMoney,
       title: 'الدفع بالتحويل',
       desc: 'حوّل 50 ريال وأرسل الإيصال عبر واتساب. بسيط وآمن.',
-      accent: '#ffde59',
     },
     {
-      icon: '📄',
+      Icon: IconDocument,
       title: 'استلم سيرتك',
       desc: 'خلال 24 ساعة تصلك سيرتك بصيغة PDF و Word جاهزة للإرسال.',
-      accent: '#7acee1',
     },
   ]
 
@@ -58,16 +54,12 @@ export default function HowItWorks() {
           {steps.map((step, i) => (
             <div key={i} className="flex flex-col items-center text-center">
               <div className="relative mb-4">
-                <div
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-md"
-                  style={{ backgroundColor: `${step.accent}15`, border: `1px solid ${step.accent}30` }}
-                >
-                  {step.icon}
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-md bg-[#7acee1]/10 border border-[#7acee1]/30">
+                  <span className="w-8 h-8 text-[#7acee1]">
+                    <step.Icon />
+                  </span>
                 </div>
-                <div
-                  className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-[#2a2928] text-xs font-black shadow"
-                  style={{ backgroundColor: step.accent }}
-                >
+                <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center bg-[#7acee1] text-[#2a2928] text-xs font-black shadow">
                   {i + 1}
                 </div>
               </div>
@@ -86,8 +78,10 @@ export default function HowItWorks() {
                 <h3 className="text-white font-black text-lg">الطريقة الأولى</h3>
                 <p className="text-[#25D366] text-sm font-semibold">عبر واتساب</p>
               </div>
-              <div className="w-12 h-12 bg-[#25D366]/15 rounded-xl flex items-center justify-center text-2xl border border-[#25D366]/30">
-                💬
+              <div className="w-12 h-12 bg-[#25D366]/15 rounded-xl flex items-center justify-center border border-[#25D366]/30">
+                <span className="w-6 h-6 text-white">
+                  <IconChat />
+                </span>
               </div>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-5">
@@ -113,8 +107,10 @@ export default function HowItWorks() {
                 <h3 className="text-white font-black text-lg">الطريقة الثانية</h3>
                 <p className="text-[#7acee1] text-sm font-semibold">تعبئة النموذج بالموقع</p>
               </div>
-              <div className="w-12 h-12 bg-[#7acee1]/15 rounded-xl flex items-center justify-center text-2xl border border-[#7acee1]/30">
-                🖥️
+              <div className="w-12 h-12 bg-[#7acee1]/15 rounded-xl flex items-center justify-center border border-[#7acee1]/30">
+                <span className="w-6 h-6 text-[#7acee1]">
+                  <IconMonitor />
+                </span>
               </div>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-5">

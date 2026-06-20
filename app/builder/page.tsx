@@ -1,6 +1,7 @@
 'use client'
 import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { IconUser, IconTarget, IconBriefcase, IconCap, IconDocument, IconBolt, IconSparkle } from '@/components/Icons'
 
 type Experience = {
   title: string
@@ -64,13 +65,13 @@ const initialForm: FormData = {
 }
 
 const STEPS = [
-  { id: 1, label: 'البيانات الشخصية', icon: '👤' },
-  { id: 2, label: 'الهدف المهني', icon: '🎯' },
-  { id: 3, label: 'الخبرات', icon: '💼' },
-  { id: 4, label: 'التعليم', icon: '🎓' },
-  { id: 5, label: 'الدورات', icon: '📜' },
-  { id: 6, label: 'المهارات واللغات', icon: '⚡' },
-  { id: 7, label: 'النموذج والإرسال', icon: '✨' },
+  { id: 1, label: 'البيانات الشخصية', Icon: IconUser },
+  { id: 2, label: 'الهدف المهني', Icon: IconTarget },
+  { id: 3, label: 'الخبرات', Icon: IconBriefcase },
+  { id: 4, label: 'التعليم', Icon: IconCap },
+  { id: 5, label: 'الدورات', Icon: IconDocument },
+  { id: 6, label: 'المهارات واللغات', Icon: IconBolt },
+  { id: 7, label: 'النموذج والإرسال', Icon: IconSparkle },
 ]
 
 const templates = [
@@ -198,7 +199,11 @@ ${form.languages}
     return (
       <div className="min-h-screen bg-[#2a2928] flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
-          <div className="text-6xl mb-6">✅</div>
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#7acee1]/10 border border-[#7acee1]/30 flex items-center justify-center">
+            <svg className="w-11 h-11 text-[#7acee1]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
           <h1 className="text-3xl font-black text-white mb-4">تم استلام بياناتك!</h1>
           <p className="text-gray-400 mb-8 leading-relaxed">
             انقر على الزر أدناه لإرسال بياناتك عبر واتساب. سيتواصل معك فريقنا لإتمام الطلب وإرسال تفاصيل الدفع.
@@ -264,7 +269,7 @@ ${form.languages}
                   : 'bg-[#393837] text-gray-600 cursor-not-allowed'
               }`}
             >
-              <span>{s.icon}</span>
+              <span className="w-4 h-4"><s.Icon /></span>
               <span className="hidden sm:inline">{s.label}</span>
             </button>
           ))}

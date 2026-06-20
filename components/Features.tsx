@@ -1,40 +1,36 @@
+import { IconATS, IconBolt, IconChat, IconTemplate, IconLock, IconPencil, IconDocument } from './Icons'
+
 export default function Features() {
   const features = [
     {
-      icon: '🤖',
+      Icon: IconATS,
       title: 'متوافق مع ATS',
       desc: 'نماذجنا مصممة لتجاوز فلاتر الذكاء الاصطناعي التي تستخدمها 95% من الشركات الكبرى في قراءة السير الذاتية.',
-      accent: '#7acee1',
     },
     {
-      icon: '⚡',
+      Icon: IconBolt,
       title: 'تسليم خلال 24 ساعة',
       desc: 'فريقنا المتخصص يعمل على سيرتك الذاتية وتسليمها بصيغة PDF و Word خلال 24 ساعة من تأكيد الطلب.',
-      accent: '#ffde59',
     },
     {
-      icon: '💬',
+      Icon: IconChat,
       title: 'واتساب أو موقع',
       desc: 'اختر طريقتك: تعبّئ بياناتك عبر واتساب مع الوكيل الذكي، أو مباشرة من الموقع بنموذج سهل.',
-      accent: '#25D366',
     },
     {
-      icon: '🎨',
+      Icon: IconTemplate,
       title: '3 نماذج احترافية',
       desc: 'اختر من بين النموذج الكلاسيكي أو العصري أو التنفيذي — كلها مصممة بمعايير دولية.',
-      accent: '#7acee1',
     },
     {
-      icon: '🔒',
+      Icon: IconLock,
       title: 'بياناتك آمنة',
       desc: 'بياناتك محمية ولن تُشارك مع أي طرف ثالث. نلتزم بسياسة خصوصية صارمة.',
-      accent: '#ffde59',
     },
     {
-      icon: '✏️',
+      Icon: IconPencil,
       title: 'تعديلات مجانية',
       desc: 'تعديل مجاني واحد خلال 7 أيام من الاستلام. رضاك التام هو هدفنا.',
-      accent: '#7acee1',
     },
   ]
 
@@ -57,11 +53,10 @@ export default function Features() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, i) => (
             <div key={i} className="animate-on-scroll card-dark rounded-2xl p-6 card-hover" style={{ transitionDelay: `${i * 0.08}s` }}>
-              <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-md"
-                style={{ backgroundColor: `${feature.accent}15`, border: `1px solid ${feature.accent}30` }}
-              >
-                {feature.icon}
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-md bg-[#7acee1]/10 border border-[#7acee1]/30">
+                <span className="w-7 h-7 text-[#7acee1]">
+                  <feature.Icon />
+                </span>
               </div>
               <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
               <p className="text-gray-400 text-sm leading-relaxed">{feature.desc}</p>
@@ -83,14 +78,21 @@ export default function Features() {
             </div>
             <div className="flex-shrink-0">
               <div className="w-48 h-48 bg-[#393837] border border-[#4a4948] rounded-3xl shadow-lg flex flex-col items-center justify-center p-4">
-                <div className="text-5xl mb-2">📋</div>
+                <span className="w-12 h-12 text-[#7acee1] mb-2">
+                  <IconDocument />
+                </span>
                 <div className="text-center">
-                  <div className="text-red-400 font-bold text-sm">75% مرفوضة</div>
+                  <div className="text-gray-300 font-bold text-sm">75% مرفوضة</div>
                   <div className="text-xs text-gray-500 mt-1">بدون قراءة بشرية</div>
                 </div>
                 <div className="w-full h-px bg-[#4a4948] my-3" />
                 <div className="text-center">
-                  <div className="text-[#7acee1] font-bold text-sm">✓ نضمن وصولك</div>
+                  <div className="text-[#7acee1] font-bold text-sm flex items-center justify-center gap-1">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    نضمن وصولك
+                  </div>
                   <div className="text-xs text-gray-500 mt-1">لمسؤول التوظيف</div>
                 </div>
               </div>
