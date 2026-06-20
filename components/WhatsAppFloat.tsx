@@ -7,24 +7,22 @@ export default function WhatsAppFloat() {
 
   return (
     <div className="whatsapp-float">
-      {/* Tooltip */}
       {tooltip && (
-        <div className="absolute bottom-16 left-0 bg-white rounded-2xl shadow-xl p-3 w-52 border border-gray-100">
+        <div className="absolute bottom-16 left-0 bg-[#2a2928] border border-[#4a4948] rounded-2xl shadow-xl p-3 w-52">
           <button
             onClick={() => setTooltip(false)}
-            className="absolute top-1 left-1 text-gray-400 hover:text-gray-600 text-xs"
+            className="absolute top-1 left-1 text-gray-500 hover:text-gray-300 text-xs"
           >
             ✕
           </button>
-          <p className="text-gray-700 text-xs text-right font-medium leading-relaxed">
+          <p className="text-gray-300 text-xs text-right font-medium leading-relaxed">
             تحدث مع الوكيل الذكي الآن!
             <br />
-            <span className="text-green-600 font-bold">سيرة ذاتية في 24 ساعة ⚡</span>
+            <span className="text-[#25D366] font-bold">سيرة ذاتية في 24 ساعة ⚡</span>
           </p>
         </div>
       )}
 
-      {/* WhatsApp Button */}
       <a
         href={`https://wa.me/${whatsappNumber}?text=مرحباً، أريد تصميم سيرة ذاتية احترافية`}
         target="_blank"
