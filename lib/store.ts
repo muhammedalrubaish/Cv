@@ -26,8 +26,13 @@ import {
  *   settings(key PK, value)
  */
 
-const SUPABASE_URL = process.env.SUPABASE_URL
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+// Accept the various names the Supabase/Vercel integration may use, so the
+// app works whether the vars are SUPABASE_* or NEXT_PUBLIC_SUPABASE_*.
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+// MUST be the service_role key — RLS is enabled with no public policies, so the
+// anon/publishable key would be blocked from reading or writing.
+const SUPABASE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY
 
 const hasDb = Boolean(SUPABASE_URL && SUPABASE_KEY)
 
