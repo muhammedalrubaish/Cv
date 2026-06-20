@@ -7,49 +7,92 @@ import {
 } from '@/types/cv'
 
 /**
- * Persistent store backed by Upstash Redis (REST API).
+ * Persistent store backed by Supabase (Postgres via the PostgREST REST API).
  *
  * Why: Vercel serverless functions are stateless and recycle frequently, so an
- * in-memory Map loses every conversation on a cold start. Redis keeps the bot
+ * in-memory Map loses every conversation on a cold start. Supabase keeps the bot
  * sessions AND powers the admin inbox (message history, availability, handover).
  *
- * If the Upstash env vars are missing (e.g. local dev), we fall back to an
+ * We talk to Supabase over plain HTTP (no extra npm dependency) using the
+ * service-role key, which runs server-side only.
+ *
+ * If the Supabase env vars are missing (e.g. local dev), we fall back to an
  * in-memory store so the app still runs — it just won't persist across restarts.
+ *
+ * Required tables (see supabase-schema.sql):
+ *   conversations(phone PK, name, step, cv_data jsonb, mode, unread,
+ *                 created_at int8, last_message_at int8)
+ *   messages(id PK, phone, dir, actor, text, ts int8)
+ *   settings(key PK, value)
  */
 
-const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
-const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN
+const SUPABASE_URL = process.env.SUPABASE_URL
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-const hasRedis = Boolean(REDIS_URL && REDIS_TOKEN)
+const hasDb = Boolean(SUPABASE_URL && SUPABASE_KEY)
 
 const MAX_STORED_MESSAGES = 200
-const KEY_AVAILABILITY = 'availability'
-const KEY_INDEX = 'conv:index'
-const convKey = (phone: string) => `conv:${phone}`
-const msgsKey = (phone: string) => `msgs:${phone}`
 
 // ---------------------------------------------------------------------------
-// Low-level Redis command (Upstash REST)
+// Low-level Supabase REST helper
 // ---------------------------------------------------------------------------
-async function redis(command: (string | number)[]): Promise<any> {
-  const res = await fetch(REDIS_URL!, {
-    method: 'POST',
+async function sb(path: string, init: RequestInit = {}): Promise<any> {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...init,
     headers: {
-      Authorization: `Bearer ${REDIS_TOKEN}`,
+      apikey: SUPABASE_KEY!,
+      Authorization: `Bearer ${SUPABASE_KEY!}`,
       'Content-Type': 'application/json',
+      ...(init.headers || {}),
     },
-    body: JSON.stringify(command),
     cache: 'no-store',
   })
   if (!res.ok) {
-    throw new Error(`Redis command failed (${res.status}): ${await res.text()}`)
+    throw new Error(`Supabase ${res.status}: ${await res.text()}`)
   }
-  const data = await res.json()
-  return data.result
+  const text = await res.text()
+  return text ? JSON.parse(text) : null
+}
+
+async function upsert(table: string, row: Record<string, unknown>): Promise<void> {
+  await sb(table, {
+    method: 'POST',
+    headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify(row),
+  })
 }
 
 // ---------------------------------------------------------------------------
-// In-memory fallback (used only when Upstash is not configured)
+// Row <-> Conversation mapping (snake_case in DB, camelCase in app)
+// ---------------------------------------------------------------------------
+function rowToConversation(row: any): Conversation {
+  return {
+    phone: row.phone,
+    name: row.name ?? '',
+    step: (row.step ?? 'greeting') as ConversationStep,
+    cvData: row.cv_data ?? {},
+    mode: (row.mode ?? 'auto') as ConversationMode,
+    unread: row.unread ?? 0,
+    createdAt: Number(row.created_at) || Date.now(),
+    lastMessageAt: Number(row.last_message_at) || Date.now(),
+  }
+}
+
+function conversationToRow(c: Conversation): Record<string, unknown> {
+  return {
+    phone: c.phone,
+    name: c.name,
+    step: c.step,
+    cv_data: c.cvData,
+    mode: c.mode,
+    unread: c.unread,
+    created_at: c.createdAt,
+    last_message_at: c.lastMessageAt,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// In-memory fallback (used only when Supabase is not configured)
 // ---------------------------------------------------------------------------
 const mem = {
   availability: 'busy' as Availability,
@@ -88,30 +131,32 @@ function emptyConversation(phone: string): Conversation {
   }
 }
 
+const enc = (v: string) => encodeURIComponent(v)
+
 // ---------------------------------------------------------------------------
 // Availability (global owner status)
 // ---------------------------------------------------------------------------
 export async function getAvailability(): Promise<Availability> {
-  if (!hasRedis) return mem.availability
-  const value = (await redis(['GET', KEY_AVAILABILITY])) as string | null
-  return value === 'available' ? 'available' : 'busy'
+  if (!hasDb) return mem.availability
+  const rows = (await sb(`settings?key=eq.availability&select=value`)) as any[]
+  return rows?.[0]?.value === 'available' ? 'available' : 'busy'
 }
 
 export async function setAvailability(value: Availability): Promise<void> {
-  if (!hasRedis) {
+  if (!hasDb) {
     mem.availability = value
     return
   }
-  await redis(['SET', KEY_AVAILABILITY, value])
+  await upsert('settings', { key: 'availability', value })
 }
 
 // ---------------------------------------------------------------------------
 // Conversations
 // ---------------------------------------------------------------------------
 export async function getConversation(phone: string): Promise<Conversation | null> {
-  if (!hasRedis) return mem.convs.get(phone) ?? null
-  const raw = (await redis(['GET', convKey(phone)])) as string | null
-  return raw ? (JSON.parse(raw) as Conversation) : null
+  if (!hasDb) return mem.convs.get(phone) ?? null
+  const rows = (await sb(`conversations?phone=eq.${enc(phone)}&select=*`)) as any[]
+  return rows?.[0] ? rowToConversation(rows[0]) : null
 }
 
 export async function ensureConversation(phone: string): Promise<Conversation> {
@@ -123,12 +168,11 @@ export async function ensureConversation(phone: string): Promise<Conversation> {
 }
 
 export async function saveConversation(conv: Conversation): Promise<void> {
-  if (!hasRedis) {
+  if (!hasDb) {
     mem.convs.set(conv.phone, conv)
     return
   }
-  await redis(['SET', convKey(conv.phone), JSON.stringify(conv)])
-  await redis(['ZADD', KEY_INDEX, conv.lastMessageAt, conv.phone])
+  await upsert('conversations', conversationToRow(conv))
 }
 
 export async function updateConversation(
@@ -146,18 +190,15 @@ export async function setMode(phone: string, mode: ConversationMode): Promise<vo
 }
 
 export async function listConversations(limit = 50): Promise<Conversation[]> {
-  if (!hasRedis) {
+  if (!hasDb) {
     return Array.from(mem.convs.values())
       .sort((a, b) => b.lastMessageAt - a.lastMessageAt)
       .slice(0, limit)
   }
-  const phones = (await redis(['ZRANGE', KEY_INDEX, 0, limit - 1, 'REV'])) as string[]
-  if (!phones || phones.length === 0) return []
-  const keys = phones.map(convKey)
-  const raws = (await redis(['MGET', ...keys])) as (string | null)[]
-  return raws
-    .filter((r): r is string => Boolean(r))
-    .map((r) => JSON.parse(r) as Conversation)
+  const rows = (await sb(
+    `conversations?select=*&order=last_message_at.desc&limit=${limit}`
+  )) as any[]
+  return (rows || []).map(rowToConversation)
 }
 
 // ---------------------------------------------------------------------------
@@ -169,14 +210,23 @@ export async function appendMessage(
 ): Promise<void> {
   const msg: StoredMessage = { ...message, ts: message.ts ?? Date.now() }
 
-  if (!hasRedis) {
+  if (!hasDb) {
     const list = mem.msgs.get(phone) ?? []
     list.push(msg)
     if (list.length > MAX_STORED_MESSAGES) list.splice(0, list.length - MAX_STORED_MESSAGES)
     mem.msgs.set(phone, list)
   } else {
-    await redis(['RPUSH', msgsKey(phone), JSON.stringify(msg)])
-    await redis(['LTRIM', msgsKey(phone), -MAX_STORED_MESSAGES, -1])
+    await sb('messages', {
+      method: 'POST',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({
+        phone,
+        dir: msg.dir,
+        actor: msg.actor,
+        text: msg.text,
+        ts: msg.ts,
+      }),
+    })
   }
 
   // Keep the conversation metadata in sync (ordering + unread badge).
@@ -186,13 +236,18 @@ export async function appendMessage(
   await saveConversation(conv)
 }
 
-export async function getMessages(phone: string, limit = 100): Promise<StoredMessage[]> {
-  if (!hasRedis) {
+export async function getMessages(phone: string, limit = 200): Promise<StoredMessage[]> {
+  if (!hasDb) {
     const list = mem.msgs.get(phone) ?? []
     return list.slice(-limit)
   }
-  const raws = (await redis(['LRANGE', msgsKey(phone), -limit, -1])) as string[]
-  return (raws || []).map((r) => JSON.parse(r) as StoredMessage)
+  // Fetch newest `limit` rows, then return them in chronological order.
+  const rows = (await sb(
+    `messages?phone=eq.${enc(phone)}&select=dir,actor,text,ts&order=ts.desc&limit=${limit}`
+  )) as any[]
+  return (rows || [])
+    .map((r) => ({ dir: r.dir, actor: r.actor, text: r.text, ts: Number(r.ts) }) as StoredMessage)
+    .reverse()
 }
 
 export async function markRead(phone: string): Promise<void> {
@@ -211,7 +266,7 @@ export async function shouldBotReply(conv: Conversation): Promise<boolean> {
 }
 
 export function isStoreConfigured(): boolean {
-  return hasRedis
+  return hasDb
 }
 
 export type { Conversation, ConversationStep, StoredMessage }
